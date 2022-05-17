@@ -18,7 +18,7 @@ function SigninScreen() {
     setGoogleSubmitting(true);
     const config = {
       androidClientId:
-        "39584151524-hgoqljatervbubj93nb1mn4pk40j0ddg.apps.googleusercontent.com",
+        "YOUR_ANDROID_CLIENT_ID",
       scopes: ["profile", "email"],
     };
 
