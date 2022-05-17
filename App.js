@@ -1,21 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import AppLoading from "expo-app-loading";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import RootStack from "./app/navigators/RootStack";
+import BottomTabNavigator from "./app/navigators/BottomTabNavigator";
+import { credentialsContext } from "./app/components/CredentialsContext";
 
 export default function App() {
+  const [appReady, setAppReady] = useState(false);
+  const [storedCredentials, setStoredCredentials] = useState("");
+
+  const checkLoginCredentials = () => {
+    AsyncStorage.getItem("memoCredentials")
+      .then((result) => {
+        if (result != null) {
+          setStoredCredentials(JSON.parse(result));
+        } else {
+          setStoredCredentials(null);
+        }
+      })
+      .catch((error) => console.log(error));
+  };
+
+  if (!appReady) {
+    return (
+      <AppLoading
+        startAsync={checkLoginCredentials}
+        onFinish={() => setAppReady(true)}
+        onError={console.warn}
+      />
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+    <credentialsContext.Provider value={{storedCredentials, setStoredCredentials}}>
+      <RootStack />
+      {/* <BottomTabNavigator /> */}
+    </credentialsContext.Provider>
+   </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
